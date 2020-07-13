@@ -24,15 +24,17 @@ def get_gap_test(picture0, picture1, picture2):
 
     moved = {}
     for move in range(0,picture0.size[0]-right):
-        thisabs=0
-        for checkx in range(0,picture0.size[0]):
-            for checky in range(bottom,up):
-                for checkpixel in range(0,3):
-                    if checkx >= move+left and checkx <= move+right:
-                        thisabs+=abs(picture0.getpixel((checkx-move,checky))[checkpixel]-picture1.getpixel((checkx,checky))[checkpixel])
-                    else :
-                        thisabs+=abs(picture2.getpixel((checkx,checky))[checkpixel]-picture1.getpixel((checkx,checky))[checkpixel])
-        moved[move]=thisabs
+        moved[move]=0
+
+    for checkx in range(0,picture0.size[0]):
+        for checky in range(bottom,up):
+            for checkpixel in range(0,3):
+                thisabs=abs(picture2.getpixel((checkx,checky))[checkpixel]-picture1.getpixel((checkx,checky))[checkpixel])
+                for move in range(0,picture0.size[0]-right):
+                    if checkx<move or checkx>move+right:
+                        moved[move]+=thisabs
+                    else:
+                        moved[move]+=abs(picture0.getpixel((checkx-move,checky))[checkpixel]-picture1.getpixel((checkx,checky))[checkpixel])
 
     minmove=0
     minmoved=None
@@ -112,7 +114,6 @@ while 'You have been blocked' in firefox.title:
     slider = firefox.find_element_by_xpath('//div[@class="geetest_slider_button"]')
     simpleSimulateDragX(firefox, slider, gap)
     firefox.switch_to_default_content()
-    time.sleep(30)
     if 'You have been blocked' in firefox.title:
         firefox.refresh()
 
